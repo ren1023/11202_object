@@ -45,4 +45,5 @@ echo $dog->setName (' 阿 旺 ');
 echo $dog->getName();
 $dog->sit();
 
+echo $dog->setName('阿旺')
 ?>

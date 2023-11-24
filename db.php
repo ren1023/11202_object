@@ -1,5 +1,4 @@
 <?php 
-
 date_default_timezone_set("Asia/Taipei");
 session_start();
 class DB{
@@ -7,7 +6,7 @@ class DB{
     protected $dsn = "mysql:host=localhost;charset=utf8;dbname=school";
     protected $pdo;
     protected $table;
-    
+
     public function __construct($table)//因為會優先執行，故可以在此將pdo，來實作
     {
         $this -> table=$table;
@@ -15,16 +14,14 @@ class DB{
     }
 
 
-    
-    function all($table = null, $where = '', $other = '')
+
+    // *****提供條件*****
+    function all( $where = '', $other = '')
     {
-        global $pdo;
-        $sql = "select * from `$table` ";
-    
-        if (isset($table) && !empty($table)) {
-    
+        // global $pdo;
+        $sql = "select * from `$this->table` ";
+        if (isset($this->table) && !empty($table)) {
             if (is_array($where)) {
-    
                 if (!empty($where)) {
                     foreach ($where as $col => $value) {
                         $tmp[] = "`$col`='$value'";
@@ -34,22 +31,21 @@ class DB{
             } else {
                 $sql .= " $where";
             }
-    
             $sql .= $other;
             //echo 'all=>'.$sql;
-            $rows = $pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+            $rows = $this->pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
             return $rows;
         } else {
             echo "錯誤:沒有指定的資料表名稱";
         }
     }
-    
-    
-    function find($table, $id)
+
+
+    // *****查詢資料*****
+    function find( $id)
     {
-        global $pdo;
-        $sql = "select * from `$table` ";
-    
+        // global $pdo;
+        $sql = "select * from `$this->table` ";
         if (is_array($id)) {
             foreach ($id as $col => $value) {
                 $tmp[] = "`$col`='$value'";
@@ -61,16 +57,17 @@ class DB{
             echo "錯誤:參數的資料型態比須是數字或陣列";
         }
         //echo 'find=>'.$sql;
-        $row = $pdo->query($sql)->fetch(PDO::FETCH_ASSOC);
+        $row = $this->pdo->query($sql)->fetch(PDO::FETCH_ASSOC);
         return $row;
     }
-    
-    function update($table, $id, $cols)
+
+
+
+    // *****更新資料*****
+    function update( $id, $cols)
     {
-        global $pdo;
-    
-        $sql = "update `$table` set ";
-    
+        // global $pdo;
+        $sql = "update `$this->table` set ";
         if (!empty($cols)) {
             foreach ($cols as $col => $value) {
                 $tmp[] = "`$col`='$value'";
@@ -78,7 +75,6 @@ class DB{
         } else {
             echo "錯誤:缺少要編輯的欄位陣列";
         }
-    
         $sql .= join(",", $tmp);
         $tmp = [];
         if (is_array($id)) {
@@ -92,29 +88,26 @@ class DB{
             echo "錯誤:參數的資料型態比須是數字或陣列";
         }
         // echo $sql;
-        return $pdo->exec($sql);
+        return $this->pdo->exec($sql);
     }
-    
-    function insert($table, $values)
+
+
+    // *****新增資料*****
+    function insert( $values)
     {
-        global $pdo;
-    
-        $sql = "insert into `$table` ";
+        // global $pdo;
+        $sql = "insert into `$this->table` ";
         $cols = "(`" . join("`,`", array_keys($values)) . "`)";
         $vals = "('" . join("','", $values) . "')";
-    
         $sql = $sql . $cols . " values " . $vals;
-    
         //echo $sql;
-    
-        return $pdo->exec($sql);
+        return $this->pdo->exec($sql);
     }
-    
-    function del($table, $id)
+    // *****刪除*****
+    function del( $id)
     {
-        global $pdo;
-        $sql = "delete from `$table` where ";
-    
+        // global $pdo;
+        $sql = "delete from `$this->table` where ";
         if (is_array($id)) {
             foreach ($id as $col => $value) {
                 $tmp[] = "`$col`='$value'";
@@ -126,18 +119,32 @@ class DB{
             echo "錯誤:參數的資料型態比須是數字或陣列";
         }
         //echo $sql;
-    
-        return $pdo->exec($sql);
+        return $this->pdo->exec($sql);
     }
-    
-    function dd($array)
-    {
-        echo "<pre>";
-        print_r($array);
-        echo "</pre>";
-    }
-       
 }
+function dd($array)
+{
+    echo "<pre>";
+    print_r($array);
+    echo "</pre>";
+}
+$student=new DB('students');
+// $rows=$student->all();
+// dd($rows);
+
+
+// $rows=$student->update('1',['name'=>'丁于于']);
+// dd($rows);
+
+
+// $rows=$student->del('479');
+// dd($rows);
+
+
+// $rows=$student->find('479');
+// dd($rows);
+
+
 
 
 ?>

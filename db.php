@@ -62,9 +62,19 @@ class DB{
     }
 
 
+    // cobin update and insert
+
+    function save($array){
+        if(isset($array['id'])){
+            $this->update($array['id'],$array);
+        }else{
+            $this->insert($array);
+        }
+    }
+
 
     // *****更新資料*****
-    function update( $id, $cols)
+    protected function update( $id, $cols)
     {
         // global $pdo;
         $sql = "update `$this->table` set ";
@@ -93,7 +103,7 @@ class DB{
 
 
     // *****新增資料*****
-    function insert( $values)
+    protected function insert( $values)
     {
         // global $pdo;
         $sql = "insert into `$this->table` ";

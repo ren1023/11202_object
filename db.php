@@ -1,31 +1,30 @@
-<?php 
+<?php
 date_default_timezone_set("Asia/Taipei");
 session_start();
-class DB{
+class DB
+{
 
     protected $dsn = "mysql:host=localhost;charset=utf8;dbname=school";
     protected $pdo;
     protected $table;
 
-    public function __construct ($table)// 因為會優先執行，故可以在此將 pdo，來實作
+    public function __construct ($table) // 因為會優先執行，故可以在此將 pdo，來實作
     {
-        $this -> table=$table;
-        $this -> pdo=new PDO($this->dsn,'root','');
+        $this->table = $table;
+        $this->pdo = new PDO($this->dsn, 'root', '');
     }
 
 
 
     // ***** 提供條件 *****
-    function all( $where = '', $other = '')
+    function all($where = '', $other = '')
     {
         // global $pdo;
         $sql = "select * from `$this->table` ";
         if (isset($this->table) && !empty($table)) {
             if (is_array($where)) {
                 if (!empty($where)) {
-                    foreach ($where as $col => $value) {
-                        $tmp[] = "`$col`='$value'";
-                    }
+                    $tmp = $this->a2s($where);
                     $sql .= " where " . join(" && ", $tmp);
                 }
             } else {
@@ -42,14 +41,12 @@ class DB{
 
 
     // ***** 查詢資料 *****
-    function find( $id)
+    function find($id)
     {
         // global $pdo;
         $sql = "select * from `$this->table` ";
         if (is_array($id)) {
-            foreach ($id as $col => $value) {
-                $tmp[] = "`$col`='$value'";
-            }
+            $tmp = $this->a2s($id);
             $sql .= " where " . join(" && ", $tmp);
         } else if (is_numeric($id)) {
             $sql .= " where `id`='$id'";
@@ -63,21 +60,20 @@ class DB{
 
 
     // 合併 update and insert
-    function save($array){
+    function save($array)
+    {
         $tmp = []; // 初始化 $tmp 為空數組
-        if(isset($array['id'])){
+        if (isset($array['id'])) {
             $sql = "update `$this->table` set ";
             if (!empty($array)) {
-                foreach ($array as $col => $value) {
-                    $tmp[] = "`$col`='$value'";
-                }
+                $tmp = $this->a2s($array);
             } else {
                 echo "錯誤：缺少要編輯的欄位陣列";
                 return; // 如果沒有要更新的數據，則終止函數
             }
             $sql .= join(",", $tmp);
             $sql .= " where `id`='{$array['id']}'";
-        }else{
+        } else {
             $sql = "insert into `$this->table` ";
             $cols = "(`" . join("`,`", array_keys($array)) . "`)";
             $vals = "('" . join("','", $array) . "')";
@@ -89,28 +85,26 @@ class DB{
 
 
     // ***** 更新資料 *****
-    protected function update( $cols)
+    protected function update($cols)
     {
         // global $pdo;
         $sql = "update `$this->table` set ";
         if (!empty($cols)) {
-            foreach ($cols as $col => $value) {
-                $tmp[] = "`$col`='$value'";
-            }
+            $tmp = $this->a2s($cols);
         } else {
             echo "錯誤：缺少要編輯的欄位陣列";
         }
         $sql .= join(",", $tmp);
         // $tmp = [];
         $sql .= " where `id`='{$cols['id']}'";
-       
+
         // echo $sql;
         return $this->pdo->exec($sql);
     }
 
 
     // ***** 新增資料 *****
-    protected function insert( $values)
+    protected function insert($values)
     {
         // global $pdo;
         $sql = "insert into `$this->table` ";
@@ -121,14 +115,12 @@ class DB{
         return $this->pdo->exec($sql);
     }
     // ***** 刪除 *****
-    function del( $id)
+    function del($id)
     {
         // global $pdo;
         $sql = "delete from `$this->table` where ";
         if (is_array($id)) {
-            foreach ($id as $col => $value) {
-                $tmp[] = "`$col`='$value'";
-            }
+            $tmp = $this->a2s($id);
             $sql .= join(" && ", $tmp);
         } else if (is_numeric($id)) {
             $sql .= " `id`='$id'";
@@ -138,7 +130,18 @@ class DB{
         //echo $sql;
         return $this->pdo->exec($sql);
     }
+
+    private function a2s($array)
+    {
+        foreach ($array as $col => $value) {
+            $tmp[] = "`$col`='$value'";
+        }
+        return $tmp;
+    }
 }
+
+
+
 function dd($array)
 {
     echo "<pre>";
@@ -161,9 +164,10 @@ function dd($array)
 // $rows=$student->find('479');
 // dd($rows);
 
-$student=new DB('students');
-$rows=$student->save (['id'=>'2','name'=>' 丁于于 ']);
+
+
+
+
+$student = new DB('students');
+$rows = $student->save (['id' => '2', 'name' => ' 丁于于 ']);
 dd($rows);
-
-
-?>

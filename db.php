@@ -7,7 +7,7 @@ class DB{
     protected $pdo;
     protected $table;
 
-    public function __construct($table)//因為會優先執行，故可以在此將pdo，來實作
+    public function __construct ($table)// 因為會優先執行，故可以在此將 pdo，來實作
     {
         $this -> table=$table;
         $this -> pdo=new PDO($this->dsn,'root','');
@@ -15,7 +15,7 @@ class DB{
 
 
 
-    // *****提供條件*****
+    // ***** 提供條件 *****
     function all( $where = '', $other = '')
     {
         // global $pdo;
@@ -36,12 +36,12 @@ class DB{
             $rows = $this->pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
             return $rows;
         } else {
-            echo "錯誤:沒有指定的資料表名稱";
+            echo "錯誤：沒有指定的資料表名稱";
         }
     }
 
 
-    // *****查詢資料*****
+    // ***** 查詢資料 *****
     function find( $id)
     {
         // global $pdo;
@@ -54,7 +54,7 @@ class DB{
         } else if (is_numeric($id)) {
             $sql .= " where `id`='$id'";
         } else {
-            echo "錯誤:參數的資料型態比須是數字或陣列";
+            echo "錯誤：參數的資料型態比須是數字或陣列";
         }
         //echo 'find=>'.$sql;
         $row = $this->pdo->query($sql)->fetch(PDO::FETCH_ASSOC);
@@ -62,17 +62,18 @@ class DB{
     }
 
 
-    // cobin update and insert
-
+    // 合併 update and insert
     function save($array){
+        $tmp = []; // 初始化 $tmp 為空數組
         if(isset($array['id'])){
             $sql = "update `$this->table` set ";
-            if (!empty($cols)) {
-                foreach ($cols as $col => $value) {
+            if (!empty($array)) {
+                foreach ($array as $col => $value) {
                     $tmp[] = "`$col`='$value'";
                 }
             } else {
-                echo "錯誤:缺少要編輯的欄位陣列";
+                echo "錯誤：缺少要編輯的欄位陣列";
+                return; // 如果沒有要更新的數據，則終止函數
             }
             $sql .= join(",", $tmp);
             $sql .= " where `id`='{$array['id']}'";
@@ -87,7 +88,7 @@ class DB{
     }
 
 
-    // *****更新資料*****
+    // ***** 更新資料 *****
     protected function update( $cols)
     {
         // global $pdo;
@@ -97,7 +98,7 @@ class DB{
                 $tmp[] = "`$col`='$value'";
             }
         } else {
-            echo "錯誤:缺少要編輯的欄位陣列";
+            echo "錯誤：缺少要編輯的欄位陣列";
         }
         $sql .= join(",", $tmp);
         // $tmp = [];
@@ -108,7 +109,7 @@ class DB{
     }
 
 
-    // *****新增資料*****
+    // ***** 新增資料 *****
     protected function insert( $values)
     {
         // global $pdo;
@@ -119,7 +120,7 @@ class DB{
         //echo $sql;
         return $this->pdo->exec($sql);
     }
-    // *****刪除*****
+    // ***** 刪除 *****
     function del( $id)
     {
         // global $pdo;
@@ -132,7 +133,7 @@ class DB{
         } else if (is_numeric($id)) {
             $sql .= " `id`='$id'";
         } else {
-            echo "錯誤:參數的資料型態比須是數字或陣列";
+            echo "錯誤：參數的資料型態比須是數字或陣列";
         }
         //echo $sql;
         return $this->pdo->exec($sql);
@@ -149,7 +150,7 @@ function dd($array)
 // dd($rows);
 
 
-// $rows=$student->update('1',['name'=>'丁于于']);
+// $rows=$student->update ('1',['name'=>' 丁于于 ']);
 // dd($rows);
 
 
@@ -161,7 +162,7 @@ function dd($array)
 // dd($rows);
 
 $student=new DB('students');
-$rows=$student->save(['id'=>'2','name'=>'丁于于']);
+$rows=$student->save (['id'=>'2','name'=>' 丁于于 ']);
 dd($rows);
 
 
